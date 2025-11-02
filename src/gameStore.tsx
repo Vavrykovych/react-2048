@@ -285,7 +285,6 @@ function canMergeHorizontally(tiles: Tile[]): boolean {
     const row = tiles
       .filter((t) => t.y === y && !t.isMerged)
       .sort((a, b) => a.x - b.x);
-    console.log(row.map((r) => r.value));
     for (let x = 0; x < row.length - 1; x++) {
       if (row[x].value === row[x + 1].value) {
         return true;

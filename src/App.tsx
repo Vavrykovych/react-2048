@@ -44,8 +44,6 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [moveLeft, moveRight, moveUp, moveDown, init]);
 
-  console.log('gameOver', gameOver)
-
   return (
     <div className="game-field-container">
       <GameField tiles={tiles} />
