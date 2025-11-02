@@ -72,6 +72,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   moveLeft: () => {
     get().removeMerged();
+    const prevTiles = structuredClone(get().tiles);
     set((state) => {
       for (let y = 0; y < FIELD_ROWS; y++) {
         const row = state.tiles
@@ -105,11 +106,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
-    get().spawnNumber();
+
+    const newTiles = get().tiles;
+    const moved = hasTilesChanged(prevTiles, newTiles);
+    if (moved) {
+      get().spawnNumber();
+    }
   },
 
   moveRight: () => {
     get().removeMerged();
+    const prevTiles = structuredClone(get().tiles);
     set((state) => {
       for (let y = 0; y < FIELD_ROWS; y++) {
         const row = state.tiles
@@ -144,11 +151,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
-    get().spawnNumber();
+    const newTiles = get().tiles;
+    const moved = hasTilesChanged(prevTiles, newTiles);
+    if (moved) {
+      get().spawnNumber();
+    }
   },
 
   moveUp: () => {
     get().removeMerged();
+    const prevTiles = structuredClone(get().tiles);
     set((state) => {
       for (let x = 0; x < FIELD_COLS; x++) {
         const col = state.tiles
@@ -182,11 +194,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
-    get().spawnNumber();
+    const newTiles = get().tiles;
+    const moved = hasTilesChanged(prevTiles, newTiles);
+    if (moved) {
+      get().spawnNumber();
+    }
   },
 
   moveDown: () => {
     get().removeMerged();
+    const prevTiles = structuredClone(get().tiles);
     set((state) => {
       for (let x = 0; x < FIELD_COLS; x++) {
         const col = state.tiles
@@ -221,7 +238,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
-    get().spawnNumber();
+    const newTiles = get().tiles;
+    const moved = hasTilesChanged(prevTiles, newTiles);
+    if (moved) {
+      get().spawnNumber();
+    }
   },
 }));
 
@@ -235,4 +256,13 @@ function getEmptyTiles(tiles: Tile[]): { x: number; y: number }[] {
     }
   }
   return emptyTiles;
+}
+
+function hasTilesChanged(prev: Tile[], next: Tile[]): boolean {
+  if (prev.length !== next.length) return true;
+
+  return prev.some((p, i) => {
+    const n = next[i];
+    return p.x !== n.x || p.y !== n.y || p.value !== n.value;
+  });
 }
