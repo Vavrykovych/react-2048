@@ -14,7 +14,11 @@
 }
 
 .game-cell {
+  font-weight: 600;
+  font-size: 18px;
+
   position: absolute;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +28,6 @@
   border-radius: 4px;
   background-color: var(--color-cell-filled);
   color: var(--color-text);
-
   transition:
     left 0.15s ease-in-out,
     top 0.15s ease-in-out,
