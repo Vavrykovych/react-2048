@@ -85,19 +85,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         // Merge
         for (let x = 0; x < row.length - 1; x++) {
-          if (row[x].value === row[x + 1].value) {
+          if (
+            row[x].value === row[x + 1].value &&
+            !row[x].isMerged &&
+            !row[x + 1].isMerged
+          ) {
             row[x].value *= 2;
             row[x].isMerging = true;
             row[x + 1].isMerged = true;
           }
         }
 
-        // Move to the left
-        for (let x = 0; x < row.length; x++) {
-          row[x].x = row[x].isMerged ? x - 1 : x;
+        // // Move to the left
+        let x = 0;
+        for (const tile of row) {
+          tile.x = tile.isMerged ? x - 1 : x;
+          if (!tile.isMerged) x++;
         }
       }
-      return { tiles: state.tiles };
+      return { tiles: [...state.tiles] };
     });
     get().spawnNumber();
   },
@@ -117,7 +123,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         // Merge
         for (let x = row.length - 1; x > 0; x--) {
-          if (row[x].value === row[x - 1].value) {
+          if (
+            row[x].value === row[x - 1].value &&
+            !row[x].isMerged &&
+            !row[x - 1].isMerged
+          ) {
             row[x].value *= 2;
             row[x].isMerging = true;
             row[x - 1].isMerged = true;
@@ -125,13 +135,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
         }
 
         // Move to the right
-        for (let i = 0; i < row.length; i++) {
-          row[i].x = row[i].isMerged
-            ? FIELD_COLS - row.length + i + 1
-            : FIELD_COLS - row.length + i;
+        let x = FIELD_COLS - 1;
+        for (let i = row.length - 1; i >= 0; i--) {
+          const tile = row[i];
+          tile.x = tile.isMerged ? x + 1 : x;
+          if (!tile.isMerged) x--;
         }
       }
-      return { tiles: state.tiles };
+      return { tiles: [...state.tiles] };
     });
     get().spawnNumber();
   },
@@ -151,7 +162,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         // Merge
         for (let y = 0; y < col.length - 1; y++) {
-          if (col[y].value === col[y + 1].value) {
+          if (
+            col[y].value === col[y + 1].value &&
+            !col[y].isMerged &&
+            !col[y + 1].isMerged
+          ) {
             col[y].value *= 2;
             col[y].isMerging = true;
             col[y + 1].isMerged = true;
@@ -159,11 +174,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
         }
 
         // Move to the top again (adjust merged)
-        for (let y = 0; y < col.length; y++) {
-          col[y].y = col[y].isMerged ? y - 1 : y;
+        let y = 0;
+        for (const tile of col) {
+          tile.y = tile.isMerged ? y - 1 : y;
+          if (!tile.isMerged) y++;
         }
       }
-      return { tiles: state.tiles };
+      return { tiles: [...state.tiles] };
     });
     get().spawnNumber();
   },
@@ -183,21 +200,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         // Merge
         for (let y = col.length - 1; y > 0; y--) {
-          if (col[y].value === col[y - 1].value) {
+          if (
+            col[y].value === col[y - 1].value &&
+            !col[y].isMerged &&
+            !col[y - 1].isMerged
+          ) {
             col[y].value *= 2;
             col[y].isMerging = true;
             col[y - 1].isMerged = true;
           }
         }
 
-        // Move to the bottom again
-        for (let i = 0; i < col.length; i++) {
-          col[i].y = col[i].isMerged
-            ? FIELD_ROWS - col.length + i + 1
-            : FIELD_ROWS - col.length + i;
+        // Move to the down
+        let y = FIELD_ROWS - 1;
+        for (let i = col.length - 1; i >= 0; i--) {
+          const tile = col[i];
+          tile.y = tile.isMerged ? y + 1 : y;
+          if (!tile.isMerged) y--;
         }
       }
-      return { tiles: state.tiles };
+      return { tiles: [...state.tiles] };
     });
     get().spawnNumber();
   },
