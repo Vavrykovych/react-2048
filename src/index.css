@@ -1,0 +1,30 @@
+body {
+  --color-bg: #f5edf9;
+  --color-field: #cbb2d8;
+  --color-cell-filled: #b57edc;
+  --color-cell-border: #a06cd5;
+  --color-text: #ffffff;
+  
+  --color-cell-empty: #d8c4e8;
+  --color-2: #b39ddb;
+  --color-4: #a78bfa;
+  --color-8: #c084fc;
+  --color-16: #d946ef;
+  --color-32: #c026d3;
+  --color-64: #9333ea;
+  --color-128: #7e22ce;
+  --color-256: #6b21a8;
+  --color-512: #581c87;
+  --color-1024: #4c1d95;
+  --color-2048: #3b0764;
+
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--color-bg);
+
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}

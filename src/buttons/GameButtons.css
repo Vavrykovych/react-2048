@@ -1,0 +1,10 @@
+.game-buttons-container {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.game-buttons-row {
+  justify-content: center;
+  display: flex;
+}
