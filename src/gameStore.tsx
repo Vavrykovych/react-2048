@@ -261,8 +261,12 @@ function getEmptyTiles(tiles: Tile[]): { x: number; y: number }[] {
 function hasTilesChanged(prev: Tile[], next: Tile[]): boolean {
   if (prev.length !== next.length) return true;
 
-  return prev.some((p, i) => {
-    const n = next[i];
-    return p.x !== n.x || p.y !== n.y || p.value !== n.value;
-  });
+  const mapPrev = new Map(prev.map((t) => [t.id, t]));
+  for (const n of next) {
+    const p = mapPrev.get(n.id);
+    if (!p || p.x !== n.x || p.y !== n.y || p.value !== n.value) {
+      return true;
+    }
+  }
+  return false;
 }
