@@ -14,6 +14,8 @@ export type Tile = {
 
 type GameStore = {
   tiles: Tile[];
+  gameOver: boolean;
+
   init: () => void;
   moveRight: () => void;
   moveLeft: () => void;
@@ -21,17 +23,20 @@ type GameStore = {
   moveDown: () => void;
   spawnNumber: () => void;
   removeMerged: () => void;
+  handlePostMove: (prevTiles: Tile[]) => void;
 };
 
 let tileId = 0;
 
 export const useGameStore = create<GameStore>((set, get) => ({
   tiles: [],
+  gameOver: false,
 
   init: () => {
     tileId = 0;
     set(() => ({
       tiles: [],
+      gameOver: false,
     }));
     get().spawnNumber();
   },
@@ -107,11 +112,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return { tiles: [...state.tiles] };
     });
 
-    const newTiles = get().tiles;
-    const moved = hasTilesChanged(prevTiles, newTiles);
-    if (moved) {
-      get().spawnNumber();
-    }
+    get().handlePostMove(prevTiles);
   },
 
   moveRight: () => {
@@ -151,11 +152,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
-    const newTiles = get().tiles;
-    const moved = hasTilesChanged(prevTiles, newTiles);
-    if (moved) {
-      get().spawnNumber();
-    }
+    get().handlePostMove(prevTiles);
   },
 
   moveUp: () => {
@@ -194,11 +191,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
-    const newTiles = get().tiles;
-    const moved = hasTilesChanged(prevTiles, newTiles);
-    if (moved) {
-      get().spawnNumber();
-    }
+    get().handlePostMove(prevTiles);
   },
 
   moveDown: () => {
@@ -238,10 +231,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
       return { tiles: [...state.tiles] };
     });
+    get().handlePostMove(prevTiles);
+  },
+
+  handlePostMove: (prevTiles: Tile[]) => {
     const newTiles = get().tiles;
     const moved = hasTilesChanged(prevTiles, newTiles);
     if (moved) {
       get().spawnNumber();
+      const tilesAfterSpawn = get().tiles;
+      if (isGameOver(tilesAfterSpawn)) {
+        set(() => ({ gameOver: true }));
+      }
     }
   },
 }));
@@ -266,6 +267,44 @@ function hasTilesChanged(prev: Tile[], next: Tile[]): boolean {
     const p = mapPrev.get(n.id);
     if (!p || p.x !== n.x || p.y !== n.y || p.value !== n.value) {
       return true;
+    }
+  }
+  return false;
+}
+
+function isGameOver(tiles: Tile[]): boolean {
+  return (
+    getEmptyTiles(tiles).length === 0 &&
+    !canMergeHorizontally(tiles) &&
+    !canMergeVertically(tiles)
+  );
+}
+
+function canMergeHorizontally(tiles: Tile[]): boolean {
+  for (let y = 0; y < FIELD_ROWS; y++) {
+    const row = tiles
+      .filter((t) => t.y === y && !t.isMerged)
+      .sort((a, b) => a.x - b.x);
+    console.log(row.map((r) => r.value));
+    for (let x = 0; x < row.length - 1; x++) {
+      if (row[x].value === row[x + 1].value) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function canMergeVertically(tiles: Tile[]): boolean {
+  for (let x = 0; x < FIELD_COLS; x++) {
+    const col = tiles
+      .filter((t) => t.x === x && !t.isMerged)
+      .sort((a, b) => a.y - b.y);
+
+    for (let y = 0; y < col.length - 1; y++) {
+      if (col[y].value === col[y + 1].value) {
+        return true;
+      }
     }
   }
   return false;
